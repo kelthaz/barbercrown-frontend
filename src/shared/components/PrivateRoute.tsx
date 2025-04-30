@@ -1,4 +1,5 @@
 // src/shared/components/PrivateRoute.tsx
+import { JSX } from 'react/jsx-runtime';
 import { useAppSelector } from '../hooks/useAppSelector';
 import { Navigate } from 'react-router-dom';
 

@@ -47,8 +47,8 @@ export default function AppointmentForm({ onAdd }: Props) {
           variant="outlined"
         />
 
-        {/* <Grid container spacing={{ xs: 1, sm: 2 }}> */}
-          <Grid item xs={12} sm={6}>
+        {/* <Grid container spacing={2}> */}
+          
             <TextField
               label="Fecha"
               type="date"
@@ -59,8 +59,7 @@ export default function AppointmentForm({ onAdd }: Props) {
               variant="outlined"
               InputLabelProps={{ shrink: true }}
             />
-          </Grid>
-          <Grid item xs={12} sm={6}>
+         
             <TextField
               label="Hora"
               type="time"
@@ -71,7 +70,6 @@ export default function AppointmentForm({ onAdd }: Props) {
               variant="outlined"
               InputLabelProps={{ shrink: true }}
             />
-          </Grid>
         {/* </Grid> */}
 
         <FormControl fullWidth variant="outlined">

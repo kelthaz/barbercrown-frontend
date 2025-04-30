@@ -24,15 +24,12 @@ export default function AppointmentsDashboard() {
       </Typography>
 
       <Grid container direction="column" alignItems="center" spacing={3}>
-        <Grid item xs={12} sm="auto" md="auto" lg="auto">
-          <Box sx={{ maxWidth: 600, width: '100%' }}>
-            <Paper sx={{ p: 3, bgcolor: (theme) => theme.palette.mode === 'dark' ? 'grey.800' : 'white', boxShadow: 1 }}>
-              <AppointmentForm onAdd={handleAddAppointment} />
-            </Paper>
-          </Box>
-        </Grid>
 
-        <Grid item xs={12} sx={{ width: '100%' }}> {/* Eliminamos sm="auto" md="auto" lg="auto" y maxWidth */}
+        <Paper sx={{ p: 3, bgcolor: (theme) => theme.palette.mode === 'dark' ? 'grey.800' : 'white', boxShadow: 1 }}>
+            <AppointmentForm onAdd={handleAddAppointment} />
+        </Paper>
+
+        <div  style={{ width: '100%' }}> {/* Eliminamos sm="auto" md="auto" lg="auto" y maxWidth */}
           {appointments.length === 0 ? (
             <Typography variant="subtitle1" color="text.secondary" align="center">
               No hay citas aún.
@@ -42,7 +39,7 @@ export default function AppointmentsDashboard() {
               <AppointmentTable appointments={appointments} />
             </div>
           )}
-        </Grid>
+        </div>
       </Grid>
     </Box>
   );

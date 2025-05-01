@@ -3,11 +3,8 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/',
+  base: '/', // deja esto si tu app va en raíz, o ajusta si va en subruta
   build: {
-    outDir: 'build', // La carpeta de salida de Vite
-    rollupOptions: {
-      input: './src/main.tsx', // O tu archivo de entrada principal
-    },
+    outDir: 'dist',
   },
 });

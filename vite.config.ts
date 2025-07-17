@@ -1,12 +1,10 @@
+// vite.config.js o vite.config.ts
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import react from '@vitejs/plugin-react'; // Si usas React
 
 export default defineConfig({
   plugins: [react()],
   build: {
-    outDir: 'build', // La carpeta de salida de Vite
-    rollupOptions: {
-      input: './src/main.tsx', // O tu archivo de entrada principal
-    },
+    outDir: 'build', // Asegúrate de que esté así
   },
 });

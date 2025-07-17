@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Appointment } from '../types/appointment';
 import { v4 as uuidv4 } from 'uuid';
 import { TextField, Button, Select, MenuItem, FormControl, InputLabel, Box, Typography, Paper, Grid } from '@mui/material';
+import Alert from '../../../shared/components/alerts/Alert';
 
 interface Props {
   onAdd: (appointment: Appointment) => void;
@@ -12,28 +13,30 @@ export default function AppointmentForm({ onAdd }: Props) {
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [barber, setBarber] = useState('Juan');
+  const [successAlert, setSuccessAlert] = useState(false);
+  const [errorAlert, setErrorAlert] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    const newAppointment: Appointment = {
-      id: uuidv4(),
-      clientName,
-      date,
-      time,
-      status: 'pending',
-    };
-
-    onAdd(newAppointment);
-
-    setClientName('');
-    setDate('');
-    setTime('');
-    setBarber('Juan');
+    if (clientName === '' || date === '' || time === '') {
+      setSuccessAlert(false);
+      setErrorAlert(true);
+    } else {
+      const newAppointment: Appointment = {
+        id: uuidv4(),
+        clientName,
+        date,
+        time,
+        status: 'pending',
+      };
+      onAdd(newAppointment);
+      setSuccessAlert(true)
+      setErrorAlert(false);
+    }
   };
 
   return (
-    <Paper sx={{ p: 4, maxWidth: 600, mx: 'auto' }}> {/* Añadimos maxWidth y centrado */}
+    <Paper sx={{ p: 4, maxWidth: 600, mx: 'auto' }}>
       <Typography variant="h6" gutterBottom>
         ➕ Nueva Cita
       </Typography>
@@ -42,35 +45,28 @@ export default function AppointmentForm({ onAdd }: Props) {
           label="Cliente"
           value={clientName}
           onChange={(e) => setClientName(e.target.value)}
-          required
           fullWidth
           variant="outlined"
         />
+        <TextField
+          label="Fecha"
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          fullWidth
+          variant="outlined"
+          InputLabelProps={{ shrink: true }}
+        />
 
-        {/* <Grid container spacing={2}> */}
-          
-            <TextField
-              label="Fecha"
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              required
-              fullWidth
-              variant="outlined"
-              InputLabelProps={{ shrink: true }}
-            />
-         
-            <TextField
-              label="Hora"
-              type="time"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-              required
-              fullWidth
-              variant="outlined"
-              InputLabelProps={{ shrink: true }}
-            />
-        {/* </Grid> */}
+        <TextField
+          label="Hora"
+          type="time"
+          value={time}
+          onChange={(e) => setTime(e.target.value)}
+          fullWidth
+          variant="outlined"
+          InputLabelProps={{ shrink: true }}
+        />
 
         <FormControl fullWidth variant="outlined">
           <InputLabel id="barber-label">Barbero</InputLabel>
@@ -87,9 +83,11 @@ export default function AppointmentForm({ onAdd }: Props) {
           </Select>
         </FormControl>
 
-        <Button type="submit" variant="contained" color="primary">
+        <Button type="submit" variant="contained" color="primary" >
           Agendar
         </Button>
+        {successAlert && <Alert message='Cita agendada con éxito' error='' />}
+        {errorAlert && <Alert message='' error='Faltan campos por completar.' />}
       </Box>
     </Paper>
   );

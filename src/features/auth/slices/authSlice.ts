@@ -1,24 +1,24 @@
-// src/features/auth/slices/authSlice.ts
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 export const login = createAsyncThunk(
-  'auth/login',
+  "auth/login",
   async ({ email, password }: { email: string; password: string }) => {
-    // Simulación de API
-    return new Promise<{ token: string; user: { name: string } }>((resolve, reject) => {
-      setTimeout(() => {
-        if (email === 'barbero@corte.com' && password === '123456') {
-          resolve({ token: 'fake-token', user: { name: 'Barbero Pro' } });
-        } else {
-          reject(new Error('Credenciales incorrectas'));
-        }
-      }, 1000);
-    });
+    return new Promise<{ token: string; user: { name: string } }>(
+      (resolve, reject) => {
+        setTimeout(() => {
+          if (email === "barbero@corte.com" && password === "123456") {
+            resolve({ token: "fake-token", user: { name: "Barbero Pro" } });
+          } else {
+            reject(new Error("Credenciales incorrectas"));
+          }
+        }, 1000);
+      }
+    );
   }
 );
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState: {
     loading: false,
     error: null as string | null,
@@ -45,7 +45,7 @@ const authSlice = createSlice({
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Error desconocido';
+        state.error = action.error.message || "Error desconocido";
       });
   },
 });

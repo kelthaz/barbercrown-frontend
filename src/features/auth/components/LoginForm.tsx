@@ -1,9 +1,17 @@
-// src/features/auth/components/LoginForm.tsx
 import { useState, useEffect } from 'react';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  TextField,
+  Typography,
+  Alert as MuiAlert,
+} from '@mui/material';
 import { useAppDispatch } from '../../../shared/hooks/useAppDispatch';
 import { useAppSelector } from '../../../shared/hooks/useAppSelector';
 import { login } from '../slices/authSlice';
 import { useNavigate } from 'react-router-dom';
+import ContentCutIcon from '@mui/icons-material/ContentCut';
 
 export default function LoginForm() {
   const dispatch = useAppDispatch();
@@ -25,33 +33,46 @@ export default function LoginForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-2">
-      <div>
-        <label className="block mb-1">Correo electrónico</label>
-        <input
-          type="email"
-          className="w-full border px-3 py-2 rounded"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-      </div>
-      <div>
-        <label className="block mb-1">Contraseña</label>
-        <input
-          type="password"
-          className="w-full border px-3 py-2 rounded"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-      </div>
-      {error && <p className="text-red-500 text-sm">{error}</p>}
-      <button
+    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }} noValidate>
+      <ContentCutIcon sx={{ fontSize: 48, color: 'primary.main', mb: 1 }} />
+      <Typography variant="h5" component="h2" gutterBottom fontWeight={600}>
+        Iniciar sesión
+      </Typography>
+      <TextField
+        label="Correo electrónico"
+        type="email"
+        fullWidth
+        margin="normal"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+      />
+      <TextField
+        label="Contraseña"
+        type="password"
+        fullWidth
+        margin="normal"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
+
+      {error && (
+        <MuiAlert severity="error" sx={{ mt: 2 }}>
+          {error}
+        </MuiAlert>
+      )}
+
+      <Button
         type="submit"
-        className="bg-blue-600 text-white px-4 py-2 rounded w-full"
+        fullWidth
+        variant="contained"
+        color="success"
+        sx={{ mt: 3 }}
         disabled={loading}
       >
-        {loading ? 'Ingresando...' : 'Iniciar sesión'}
-      </button>
-    </form>
+        {loading ? <CircularProgress size={24} color="inherit" /> : 'Iniciar sesión'}
+      </Button>
+    </Box>
   );
 }

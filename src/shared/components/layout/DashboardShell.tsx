@@ -6,22 +6,45 @@ import HomeIcon from '@mui/icons-material/Home';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
 import PersonIcon from '@mui/icons-material/Person';
-import StyleIcon from '@mui/icons-material/Style';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
-import { useColorMode } from '../../../theme/theme'; // Ajusta la ruta
+import { useColorMode } from '../../../theme/theme';
+import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import { useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '../../../shared/hooks/useAppDispatch';
+import { logout } from '../../../features/auth/slices/authSlice';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 export default function DashboardShell() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const { mode, toggleColorMode } = useColorMode(); // Obtén el modo y la función del contexto
-  const icon = mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />; // Define el icono según el modo
+  const { mode, toggleColorMode } = useColorMode();
+  const icon = mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />;
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleLogout = (e: React.FormEvent) => {
+    e.preventDefault();
+    dispatch(logout());
+    navigate('/');
   };
 
   const drawer = (
@@ -33,8 +56,9 @@ export default function DashboardShell() {
         {[
           { text: 'Inicio', to: '/dashboard', icon: <HomeIcon /> },
           { text: 'Citas', to: '/dashboard/appointments', icon: <CalendarTodayIcon /> },
-          { text: 'Barberos', to: '/dashboard/barbers', icon: <ContentCutIcon /> },
+          { text: 'Usuarios', to: '/dashboard/users', icon: <ContentCutIcon /> },
           { text: 'Perfil', to: '/dashboard/profile', icon: <PersonIcon /> },
+          { text: 'Cerrar sesión', to: '/', icon: <LogoutIcon /> },
         ].map((item) => (
           <ListItem key={item.text} disablePadding>
             <ListItemButton component={Link} to={item.to}>
@@ -64,34 +88,62 @@ export default function DashboardShell() {
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }} // Ocultar en pantallas pequeñas y superiores
+            sx={{ mr: 2, display: { sm: 'none' } }}
           >
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1, textAlign: { xs: 'center', sm: 'left' } }}>
             BarberCrown
           </Typography>
-          <Box sx={{ display: { xs: 'none', sm: 'flex' }, gap: 2, alignItems: 'center' }}> {/* Añadimos alignItems: 'center' */}
+          <Box sx={{ display: { xs: 'none', sm: 'flex' }, gap: 2, alignItems: 'center' }}>
             <Button color="inherit" component={Link} to="/dashboard">
               Inicio
             </Button>
             <Button color="inherit" component={Link} to="/dashboard/appointments">
               Citas
             </Button>
-            <Button color="inherit" component={Link} to="/dashboard/barbers">
-              Barberos
+            <Button color="inherit" component={Link} to="/dashboard/users">
+              Usuarios
             </Button>
-            <Button color="inherit" component={Link} to="/dashboard/profile">
-              Perfil
-            </Button>
-            <IconButton onClick={toggleColorMode} color="inherit"> {/* Botón de modo oscuro */}
+            <IconButton onClick={toggleColorMode} color="inherit">
               {icon}
             </IconButton>
+
+            <div>
+              <IconButton
+                size="large"
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleMenu}
+                color="inherit"
+              >
+                <AccountCircle />
+              </IconButton>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
+                <MenuItem component={Link} to="/dashboard/profile"><PersonIcon />  Profile</MenuItem>
+                <MenuItem onClick={handleLogout} component={Link} to="/"><LogoutIcon />  Cerrar sesión</MenuItem>
+              </Menu>
+            </div>
           </Box>
           <IconButton
             onClick={toggleColorMode}
             color="inherit"
-            sx={{ display: { xs: 'block', sm: 'none' } }} // Mostrar en extra pequeñas
+            sx={{ display: { xs: 'block', sm: 'none' } }}
           >
             {icon}
           </IconButton>
@@ -103,7 +155,7 @@ export default function DashboardShell() {
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
+            keepMounted: true,
           }}
           sx={{
             display: { xs: 'block', sm: 'none' },

@@ -1,15 +1,14 @@
 import React, { useState, useRef, useLayoutEffect } from 'react';
-import { Appointment } from '../types/appointment';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip, TablePagination, useMediaQuery, useTheme, Box, Button } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { Users } from '../types/users';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip, TablePagination, useMediaQuery, useTheme, Button } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 interface Props {
-  appointments: Appointment[];
+  users: Users[];
 }
 
-export default function AppointmentTable({ appointments }: Props) {
+export default function UsersTable({ users }: Props) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const theme = useTheme();
@@ -26,9 +25,8 @@ export default function AppointmentTable({ appointments }: Props) {
   };
 
   const statusColorMap = {
-    pending: { backgroundColor: '#fffacd', color: '#b8860b' },
-    confirmed: { backgroundColor: '#e0f2f7', color: '#1976d2' },
-    cancelled: { backgroundColor: '#ffebee', color: '#d32f2f' },
+    Activo: { backgroundColor: '#fffacd', color: 'rgba(3, 174, 40, 1)' },
+    Inactivo: { backgroundColor: '#e0f2f7', color: '#d32f2f' }
   };
 
   useLayoutEffect(() => {
@@ -52,10 +50,10 @@ export default function AppointmentTable({ appointments }: Props) {
         });
       });
     }
-  }, [isMobile, appointments]);
+  }, [isMobile, users]);
 
   const visibleColumnsMobile = ['Cliente', 'Fecha', 'Hora', 'Funciones'];
-  const allColumns = ['CLIENTE', 'FECHA', 'HORA', 'ESTADO', 'ACCIONES'];
+  const allColumns = ['NOMBRE DE USUARIO', 'CORREO', 'PERFIL', 'ESTADO', 'ACCIONES'];
 
   return (
     <Paper sx={{ width: '100%', mx: 'auto', mt: 2 }}>
@@ -78,19 +76,19 @@ export default function AppointmentTable({ appointments }: Props) {
             </TableRow>
           </TableHead>
           <TableBody id="appointment-table-body">
-            {appointments
+            {users
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((appointment) => (
-                <TableRow key={appointment.id}>
+              .map((users) => (
+                <TableRow key={users.id}>
                   <TableCell component="th" scope="row">
-                    {appointment.clientName}
+                    {users.userName}
                   </TableCell>
-                  <TableCell align="left">{appointment.date}</TableCell>
-                  <TableCell align="left">{appointment.time}</TableCell>
+                  <TableCell align="left">{users.email}</TableCell>
+                  <TableCell align="left">{users.profile}</TableCell>
                   <TableCell align="left">
                     <Chip
-                      label={appointment.status}
-                      sx={{ ...statusColorMap[appointment.status], fontSize: '0.8rem', fontWeight: 'medium' }}
+                      label={users.status}
+                      sx={{ ...statusColorMap[users.status], fontSize: '0.8rem', fontWeight: 'medium' }}
                     />
                   </TableCell>
                   <TableCell align="left" sx={{ display: 'flex', alignItems: 'center' }}>
@@ -109,7 +107,7 @@ export default function AppointmentTable({ appointments }: Props) {
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={appointments.length}
+        count={users.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}

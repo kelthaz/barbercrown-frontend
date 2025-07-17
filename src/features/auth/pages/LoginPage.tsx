@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 export default function LoginPage() {
   const { loading, error, token } = useAppSelector((state) => state.auth);
-  const [addUserForm, setAddUserForm] = useState(false);
+  const [addUserForm, setAddUserForm] = useState(true);
 
   return (
     <Box

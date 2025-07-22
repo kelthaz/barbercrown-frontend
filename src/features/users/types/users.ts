@@ -1,8 +1,13 @@
 export interface Users {
   id: string;
-  userName: string;
+  name: string;
   email: string;
   profile: string;
   password: string;
-  status: "Activo" | "Inactivo";
+  phone: string;
+  rol: {
+    id: string;
+    name: string;
+  };
+  estado: number
 }

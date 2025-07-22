@@ -12,6 +12,7 @@ export default function userDashboard() {
     setUsers((prev) => [...prev, users]);
   };
 
+
   return (
     <Box sx={{ p: { xs: 0, sm: 3 }, width: '100%' }}>
       <Typography variant="h4" component="h1" gutterBottom align="center">
@@ -25,15 +26,9 @@ export default function userDashboard() {
         </Paper>
 
         <div style={{ width: '100%' }}>
-          {users.length === 0 ? (
-            <Typography variant="subtitle1" color="text.secondary" align="center">
-              No hay usuarios aún.
-            </Typography>
-          ) : (
-            <div style={{ width: '100%' }}>
-              <UsersTable users={users} />
-            </div>
-          )}
+          <div style={{ width: '100%' }}>
+            <UsersTable />
+          </div>
         </div>
       </Grid>
     </Box>

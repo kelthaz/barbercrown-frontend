@@ -1,19 +1,19 @@
-import React, { useState, useRef, useLayoutEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { Users } from '../types/users';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip, TablePagination, useMediaQuery, useTheme, Button } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { fetchUsers } from "../services/userService";
 
-interface Props {
-  users: Users[];
-}
 
-export default function UsersTable({ users }: Props) {
+export default function UsersTable() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const headerCellsRef = useRef<(HTMLTableCellElement | null)[]>([]);
+  const [users, setUsers] = useState<Users[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPage(newPage);
@@ -25,7 +25,7 @@ export default function UsersTable({ users }: Props) {
   };
 
   const statusColorMap = {
-    Activo: { backgroundColor: '#fffacd', color: 'rgba(3, 174, 40, 1)' },
+    Activo: { backgroundColor: '#e0f2f7', color: 'rgba(13, 72, 249, 1)' },
     Inactivo: { backgroundColor: '#e0f2f7', color: '#d32f2f' }
   };
 
@@ -50,10 +50,27 @@ export default function UsersTable({ users }: Props) {
         });
       });
     }
-  }, [isMobile, users]);
+  }, [isMobile]);
+
+
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        const data = await fetchUsers();
+        setUsers(data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUsers();
+  }, []);
+
 
   const visibleColumnsMobile = ['Cliente', 'Fecha', 'Hora', 'Funciones'];
-  const allColumns = ['NOMBRE DE USUARIO', 'CORREO', 'PERFIL', 'ESTADO', 'ACCIONES'];
+  const allColumns = ['NOMBRE USUARIO', 'CORREO', 'TELÉFONO', 'ROL', 'ESTADO', 'ACCIONES'];
 
   return (
     <Paper sx={{ width: '100%', mx: 'auto', mt: 2 }}>
@@ -65,6 +82,7 @@ export default function UsersTable({ users }: Props) {
                 .map((column) => (
                   <TableCell
                     key={column}
+                    sx={{ fontWeight: 'bold' }}
                     align={column === 'Cliente' ? 'left' : 'left'}
                     ref={(el: HTMLTableCellElement | null) => {
                       headerCellsRef.current[allColumns.indexOf(column)] = el;
@@ -78,17 +96,18 @@ export default function UsersTable({ users }: Props) {
           <TableBody id="appointment-table-body">
             {users
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((users) => (
-                <TableRow key={users.id}>
+              .map((user) => (
+                <TableRow key={user.id}>
                   <TableCell component="th" scope="row">
-                    {users.userName}
+                    {user.name}
                   </TableCell>
-                  <TableCell align="left">{users.email}</TableCell>
-                  <TableCell align="left">{users.profile}</TableCell>
+                  <TableCell align="left">{user.email}</TableCell>
+                  <TableCell align="left">{user.phone}</TableCell>
+                  <TableCell align="left">{user.rol.name}</TableCell>
                   <TableCell align="left">
                     <Chip
-                      label={users.status}
-                      sx={{ ...statusColorMap[users.status], fontSize: '0.8rem', fontWeight: 'medium' }}
+                      label={user.estado === 0 ? 'Inactivo' : 'Activo'}
+                      sx={{ ...statusColorMap[user.estado === 0 ? 'Inactivo' : 'Activo'], fontSize: '0.8rem', fontWeight: 'medium' }}
                     />
                   </TableCell>
                   <TableCell align="left" sx={{ display: 'flex', alignItems: 'center' }}>

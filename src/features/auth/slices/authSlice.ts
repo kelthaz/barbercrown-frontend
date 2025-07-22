@@ -1,19 +1,29 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+
+const apiUrl = import.meta.env.VITE_APP_API_URL + "auth/login";
 
 export const login = createAsyncThunk(
   "auth/login",
-  async ({ email, password }: { email: string; password: string }) => {
-    return new Promise<{ token: string; user: { name: string } }>(
-      (resolve, reject) => {
-        setTimeout(() => {
-          if (email === "barbero@corte.com" && password === "123456") {
-            resolve({ token: "fake-token", user: { name: "Barbero Pro" } });
-          } else {
-            reject(new Error("Credenciales incorrectas"));
-          }
-        }, 1000);
-      }
-    );
+  async (
+    { email, password }: { email: string; password: string },
+    thunkAPI
+  ) => {
+    try {
+      const response = await axios.post(apiUrl, { email, password });
+
+      const { access_token, user } = response.data;
+
+      // ✅ Guardamos en localStorage aquí
+      localStorage.setItem("token", access_token);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      return { token: access_token, user };
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Error en el login"
+      );
+    }
   }
 );
 
@@ -22,14 +32,16 @@ const authSlice = createSlice({
   initialState: {
     loading: false,
     error: null as string | null,
-    token: null as string | null,
-    user: null as { name: string } | null,
+    token: localStorage.getItem("token"),
+    user: JSON.parse(localStorage.getItem("user") || "null"),
   },
   reducers: {
     logout: (state) => {
       state.token = null;
       state.user = null;
       state.error = null;
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
     },
   },
   extraReducers: (builder) => {
@@ -45,7 +57,7 @@ const authSlice = createSlice({
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Error desconocido";
+        state.error = (action.payload as string) || "Error desconocido";
       });
   },
 });

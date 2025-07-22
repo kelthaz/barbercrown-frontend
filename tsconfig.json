@@ -5,13 +5,14 @@
     "target": "ESNext",
     "moduleResolution": "bundler",
     "lib": ["DOM", "ESNext"],
-    "types": ["vite/client"],
+    "types": ["vite/client","node", "react", "react-dom"],
     "allowJs": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "strict": true,
     "outDir": "./dist", 
     "rootDir": "./src", 
+    
   },
   "include": ["./src"],
   "exclude": ["node_modules"]

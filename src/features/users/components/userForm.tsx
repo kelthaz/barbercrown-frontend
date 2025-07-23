@@ -5,6 +5,7 @@ import { TextField, Button, Select, MenuItem, FormControl, InputLabel, Box, Typo
 import Alert from '../../../shared/components/alerts/Alert';
 import { fetchRoles } from '../../roles/services/roleService';
 import { Roles } from '../../roles/types/roles';
+import { createUser } from '../services/userService';
 
 interface Props {
   onAdd: (user: Users) => void;
@@ -12,22 +13,55 @@ interface Props {
 
 export default function userForm({ onAdd }: Props) {
   const [name, setName] = useState('');
+  const [nameError, setNameError] = useState('');
   const [roles, setRoles] = useState<Roles[]>([]);
   const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
   const [selectedRole, setSelectedRole] = useState<string>('');
   const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
   const [successAlert, setSuccessAlert] = useState(false);
   const [errorAlert, setErrorAlert] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [phoneError, setPhoneError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const validateForm = () => {
+    const errors: { [key: string]: string } = {};
+
+    if (!name.trim()) errors.name = 'El nombre es obligatorio';
+    if (!email.trim()) errors.email = 'El correo electrónico es obligatorio';
+    if (phone.length < 10) errors.phone = 'El número debe tener al menos 10 caracteres';
+    if (phone.length > 10) errors.phone = 'El número debe tener al menos 10 caracteres';
+
+    setNameError(errors.name || '');
+    setEmailError(errors.email || '');
+    setPhoneError(errors.phone || '');
+
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (name === '' || email === '' || selectedRole === '') {
+    let valid = true;
+
+    const isValid = validateForm();
+    if (!isValid) {
       setSuccessAlert(false);
       setErrorAlert(true);
-    } else {
-      setSuccessAlert(true)
-      setErrorAlert(false);
+      return;
+    }
+
+    if (valid) {
+      try {
+        await createUser({ name, email, rol_id: parseInt(selectedRole), password, estado: 1, phone });
+
+        setSuccessAlert(true);
+        setErrorAlert(false);
+      } catch (error) {
+        console.error("Error creating user:", error);
+        setErrorAlert(true);
+        setSuccessAlert(false);
+      }
     }
   };
 
@@ -58,6 +92,8 @@ export default function userForm({ onAdd }: Props) {
           onChange={(e) => setName(e.target.value)}
           fullWidth
           variant="outlined"
+          error={!!nameError}
+          helperText={nameError}
         />
         <TextField
           label="Correo electrónico"
@@ -65,9 +101,26 @@ export default function userForm({ onAdd }: Props) {
           onChange={(e) => setEmail(e.target.value)}
           fullWidth
           variant="outlined"
+          error={!!emailError}
+          helperText={emailError}
+        />
+        <TextField
+          label="Teléfono"
+          value={phone}
+          error={!!phoneError}
+          helperText={
+            phoneError
+              ? `${phoneError} (${phone.length}/10)`
+              : `${phone.length}/10 dígitos`
+          }
+          onChange={(e) => setPhone(e.target.value)}
+          fullWidth
+          variant="outlined"
+          type='number'
         />
         <TextField
           label="Contraseña"
+          type='password'
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           fullWidth

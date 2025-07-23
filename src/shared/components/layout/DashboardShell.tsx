@@ -31,6 +31,11 @@ export default function DashboardShell() {
   const [anchorElAdmin, setAnchorElAdmin] = React.useState<null | HTMLElement>(null);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [adminMenuOpen, setAdminMenuOpen] = useState(false);
+
+  const handleAdminToggle = () => {
+    setAdminMenuOpen(!adminMenuOpen);
+  };
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -59,7 +64,7 @@ export default function DashboardShell() {
   };
 
   const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
+    <Box sx={{ textAlign: 'center' }}>
       <Typography variant="h6" sx={{ my: 2 }}>
         BarberCrown
       </Typography>
@@ -67,17 +72,44 @@ export default function DashboardShell() {
         {[
           { text: 'Inicio', to: '/dashboard', icon: <HomeIcon /> },
           { text: 'Citas', to: '/dashboard/appointments', icon: <CalendarTodayIcon /> },
-          { text: 'Usuarios', to: '/dashboard/users', icon: <ContentCutIcon /> },
           { text: 'Perfil', to: '/dashboard/profile', icon: <PersonIcon /> },
-          { text: 'Cerrar sesión', to: '/', icon: <LogoutIcon /> },
+          { text: 'Cerrar sesión', to: '/', action: handleLogout, icon: <LogoutIcon /> },
         ].map((item) => (
           <ListItem key={item.text} disablePadding>
-            <ListItemButton component={Link} to={item.to}>
+            <ListItemButton onClick={(e) => {
+              handleDrawerToggle();
+              if (item.action) {
+                item.action(e);
+              }
+            }} component={Link} to={item.to}>
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.text} />
             </ListItemButton>
           </ListItem>
         ))}
+
+        <ListItem disablePadding>
+          <ListItemButton onClick={handleAdminToggle}>
+            <ListItemIcon><AdminPanelSettingsIcon /></ListItemIcon>
+            <ListItemText primary="Administrador" />
+          </ListItemButton>
+        </ListItem>
+        {adminMenuOpen && (
+          <>
+            <ListItem disablePadding sx={{ pl: 4 }}>
+              <ListItemButton onClick={handleDrawerToggle} component={Link} to="/dashboard/users">
+                <ListItemIcon><SupervisorAccountIcon /></ListItemIcon>
+                <ListItemText primary="Usuarios" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding sx={{ pl: 4 }}>
+              <ListItemButton onClick={handleDrawerToggle} component={Link} to="/dashboard/roles">
+                <ListItemIcon><AdminPanelSettingsIcon /></ListItemIcon>
+                <ListItemText primary="Roles" />
+              </ListItemButton>
+            </ListItem>
+          </>
+        )}
       </List>
     </Box>
   );
@@ -112,9 +144,6 @@ export default function DashboardShell() {
             </Button>
             <Button color="inherit" component={Link} to="/dashboard/appointments">
               Citas
-            </Button>
-            <Button color="inherit" component={Link} to="/dashboard/users">
-              Usuarios
             </Button>
             <div>
               <Button color="inherit" onClick={handleMenuAdmin}>

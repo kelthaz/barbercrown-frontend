@@ -3,7 +3,7 @@ import { Roles } from '../types/roles';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip, TablePagination, useMediaQuery, useTheme, Button } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { fetchRoles } from "../services/roleService"; // Import the fetchRoles function
+import { fetchRoles } from "../services/roleService";
 
 export default function RolesTable() {
     const [page, setPage] = useState(0);

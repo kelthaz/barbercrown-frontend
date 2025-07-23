@@ -24,18 +24,21 @@ export default function userForm({ onAdd }: Props) {
   const [errorAlert, setErrorAlert] = useState(false);
   const [loading, setLoading] = useState(true);
   const [phoneError, setPhoneError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
 
   const validateForm = () => {
     const errors: { [key: string]: string } = {};
-
     if (!name.trim()) errors.name = 'El nombre es obligatorio';
     if (!email.trim()) errors.email = 'El correo electrónico es obligatorio';
+    if (!password.trim()) errors.password = 'La contraseña es obligatoria';
     if (phone.length < 10) errors.phone = 'El número debe tener al menos 10 caracteres';
     if (phone.length > 10) errors.phone = 'El número debe tener al menos 10 caracteres';
+    if (password.length < 6) errors.password = 'El número debe tener al menos 10 caracteres';
 
     setNameError(errors.name || '');
     setEmailError(errors.email || '');
     setPhoneError(errors.phone || '');
+    setPasswordError(errors.password || '');
 
     return Object.keys(errors).length === 0;
   };
@@ -130,6 +133,12 @@ export default function userForm({ onAdd }: Props) {
           onChange={(e) => setPassword(e.target.value)}
           fullWidth
           variant="outlined"
+          error={!!passwordError}
+          helperText={
+            passwordError
+              ? `${passwordError} (${password.length}/6)`
+              : `${password.length}/6 dígitos`
+          }
         />
         {roles.length > 0 && (
           <FormControl fullWidth variant="outlined">

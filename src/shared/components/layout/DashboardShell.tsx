@@ -18,6 +18,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../../../shared/hooks/useAppDispatch';
 import { logout } from '../../../features/auth/slices/authSlice';
 import LogoutIcon from '@mui/icons-material/Logout';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 
 export default function DashboardShell() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -26,6 +28,7 @@ export default function DashboardShell() {
   const { mode, toggleColorMode } = useColorMode();
   const icon = mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorElAdmin, setAnchorElAdmin] = React.useState<null | HTMLElement>(null);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -37,8 +40,16 @@ export default function DashboardShell() {
     setAnchorEl(null);
   };
 
+  const handleCloseAdmin = () => {
+    setAnchorElAdmin(null);
+  };
+
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuAdmin = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElAdmin(event.currentTarget);
   };
 
   const handleLogout = (e: React.FormEvent) => {
@@ -105,6 +116,29 @@ export default function DashboardShell() {
             <Button color="inherit" component={Link} to="/dashboard/users">
               Usuarios
             </Button>
+            <div>
+              <Button color="inherit" onClick={handleMenuAdmin}>
+                Administrador
+              </Button>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorElAdmin}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorElAdmin)}
+                onClose={handleCloseAdmin}
+              >
+                <MenuItem component={Link} to="/dashboard/users"><SupervisorAccountIcon />  Usuarios</MenuItem>
+                <MenuItem component={Link} to="/dashboard/roles"><AdminPanelSettingsIcon />  Roles</MenuItem>
+              </Menu>
+            </div>
             <IconButton onClick={toggleColorMode} color="inherit">
               {icon}
             </IconButton>

@@ -66,7 +66,7 @@ export default function addUserForm() {
                     variant="outlined"
                 />
                 <TextField
-                    label="Perfil del usuario"
+                    label="Rol del usuario"
                     value={profile}
                     onChange={(e) => setProfile('Cliente')}
                     fullWidth

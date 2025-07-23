@@ -6,7 +6,9 @@ import AppointmentsDashboard from '../features/appointments/pages/AppointmentsDa
 import BarberDashboard from '../features/barbers/pages/barberDashboard';
 import UserDashboard from '../features/users/pages/userDashboard';
 import DashboardShell from '../shared/components/layout/DashboardShell';
-import { ColorModeProvider } from '../theme/theme'; // Ajusta la ruta
+import { ColorModeProvider } from '../theme/theme';
+import RoleDashboard from "../features/roles/pages/roleDashboard"
+
 
 
 export default function App() {
@@ -18,6 +20,7 @@ export default function App() {
           <Route index element={<DashboardPage />} />
           <Route path="appointments" element={<AppointmentsDashboard />} />
           <Route path="users" element={<UserDashboard />} />
+          <Route path="roles" element={<RoleDashboard />} />
         </Route>
       </Routes>
     </ColorModeProvider>

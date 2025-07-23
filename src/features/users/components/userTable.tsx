@@ -5,15 +5,16 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { fetchUsers } from "../services/userService";
 
+type UsersTableProps = {
+  users: Users[];
+};
 
-export default function UsersTable() {
+export default function UsersTable({ users }: UsersTableProps) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const headerCellsRef = useRef<(HTMLTableCellElement | null)[]>([]);
-  const [users, setUsers] = useState<Users[]>([]);
-  const [loading, setLoading] = useState(true);
 
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPage(newPage);
@@ -53,23 +54,6 @@ export default function UsersTable() {
   }, [isMobile]);
 
 
-  useEffect(() => {
-    const loadUsers = async () => {
-      try {
-        const data = await fetchUsers();
-        setUsers(data);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadUsers();
-  }, []);
-
-
-  const visibleColumnsMobile = ['Cliente', 'Fecha', 'Hora', 'Funciones'];
   const allColumns = ['NOMBRE USUARIO', 'CORREO', 'TELÉFONO', 'ROL', 'ESTADO', 'ACCIONES'];
 
   return (

@@ -5,6 +5,7 @@ export interface Users {
   profile: string;
   password: string;
   phone: string;
+  rol: {id: number; name: string};
   rol_id: number
   estado: number
 }

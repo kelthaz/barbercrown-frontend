@@ -17,7 +17,7 @@ export default function userForm({ onAdd }: Props) {
   const [roles, setRoles] = useState<Roles[]>([]);
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
-  const [selectedRole, setSelectedRole] = useState<string>('');
+  const [selectedRole, setSelectedRole] = useState<number>(1);
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [successAlert, setSuccessAlert] = useState(false);
@@ -50,13 +50,18 @@ export default function userForm({ onAdd }: Props) {
       setErrorAlert(true);
       return;
     }
-
     if (valid) {
       try {
-        await createUser({ name, email, rol_id: parseInt(selectedRole), password, estado: 1, phone });
-
+        const newUser = await createUser({
+          name, email, rol_id: selectedRole, password, estado: 1, phone
+        });
+        onAdd(newUser);
         setSuccessAlert(true);
         setErrorAlert(false);
+        setName('');
+        setEmail('');
+        setPhone('');
+        setPassword('');
       } catch (error) {
         console.error("Error creating user:", error);
         setErrorAlert(true);
@@ -126,23 +131,24 @@ export default function userForm({ onAdd }: Props) {
           fullWidth
           variant="outlined"
         />
-        <FormControl fullWidth variant="outlined">
-          <InputLabel id="barber-label">Rol del usuario</InputLabel>
-          <Select
-            labelId="barber-label"
-            id="profile"
-            value={selectedRole}
-            onChange={(e) => setSelectedRole(e.target.value)}
-            label="Rol del usuario"
-          >
-            {roles.map((role) => (
-              <MenuItem key={role.id} value={role.id}>
-                {role.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
+        {roles.length > 0 && (
+          <FormControl fullWidth variant="outlined">
+            <InputLabel id="barber-label">Rol del usuario</InputLabel>
+            <Select
+              labelId="barber-label"
+              id="profile"
+              value={selectedRole}
+              onChange={(e) => setSelectedRole(Number(e.target.value))} // ✅ conversión correcta
+              label="Rol del usuario"
+            >
+              {roles.map((role) => (
+                <MenuItem key={role.id} value={role.id}>
+                  {role?.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
 
         <Button type="submit" variant="contained" color="primary" >
           Crear usuario

@@ -1,41 +1,84 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Users } from '../types/users';
 import { v4 as uuidv4 } from 'uuid';
 import { TextField, Button, Select, MenuItem, FormControl, InputLabel, Box, Typography, Paper } from '@mui/material';
 import Alert from '../../../shared/components/alerts/Alert';
+import { fetchRoles } from '../../roles/services/roleService';
+import { Roles } from '../../roles/types/roles';
+import { createUser } from '../services/userService';
 
 interface Props {
   onAdd: (user: Users) => void;
 }
 
 export default function userForm({ onAdd }: Props) {
-  const [userName, setUserName] = useState('');
+  const [name, setName] = useState('');
+  const [nameError, setNameError] = useState('');
+  const [roles, setRoles] = useState<Roles[]>([]);
   const [email, setEmail] = useState('');
-  const [profile, setProfile] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [selectedRole, setSelectedRole] = useState<string>('');
   const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
   const [successAlert, setSuccessAlert] = useState(false);
   const [errorAlert, setErrorAlert] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [phoneError, setPhoneError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const validateForm = () => {
+    const errors: { [key: string]: string } = {};
+
+    if (!name.trim()) errors.name = 'El nombre es obligatorio';
+    if (!email.trim()) errors.email = 'El correo electrónico es obligatorio';
+    if (phone.length < 10) errors.phone = 'El número debe tener al menos 10 caracteres';
+    if (phone.length > 10) errors.phone = 'El número debe tener al menos 10 caracteres';
+
+    setNameError(errors.name || '');
+    setEmailError(errors.email || '');
+    setPhoneError(errors.phone || '');
+
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (userName === '' || email === '' || profile === '') {
+    let valid = true;
+
+    const isValid = validateForm();
+    if (!isValid) {
       setSuccessAlert(false);
       setErrorAlert(true);
-    } else {
-      const newUser: Users = {
-        id: uuidv4(),
-        userName,
-        email,
-        profile,
-        password,
-        status: 'Activo',
-      };
+      return;
+    }
 
-      onAdd(newUser);
-      setSuccessAlert(true)
-      setErrorAlert(false);
+    if (valid) {
+      try {
+        await createUser({ name, email, rol_id: parseInt(selectedRole), password, estado: 1, phone });
+
+        setSuccessAlert(true);
+        setErrorAlert(false);
+      } catch (error) {
+        console.error("Error creating user:", error);
+        setErrorAlert(true);
+        setSuccessAlert(false);
+      }
     }
   };
+
+  useEffect(() => {
+    const loadRoles = async () => {
+      try {
+        const data = await fetchRoles();
+        setRoles(data);
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadRoles();
+  }, []);
 
   return (
     <Paper sx={{ p: 4, maxWidth: 600, mx: 'auto' }}>
@@ -45,10 +88,12 @@ export default function userForm({ onAdd }: Props) {
       <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <TextField
           label="Nombre de usuario"
-          value={userName}
-          onChange={(e) => setUserName(e.target.value)}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
           fullWidth
           variant="outlined"
+          error={!!nameError}
+          helperText={nameError}
         />
         <TextField
           label="Correo electrónico"
@@ -56,26 +101,45 @@ export default function userForm({ onAdd }: Props) {
           onChange={(e) => setEmail(e.target.value)}
           fullWidth
           variant="outlined"
+          error={!!emailError}
+          helperText={emailError}
+        />
+        <TextField
+          label="Teléfono"
+          value={phone}
+          error={!!phoneError}
+          helperText={
+            phoneError
+              ? `${phoneError} (${phone.length}/10)`
+              : `${phone.length}/10 dígitos`
+          }
+          onChange={(e) => setPhone(e.target.value)}
+          fullWidth
+          variant="outlined"
+          type='number'
         />
         <TextField
           label="Contraseña"
+          type='password'
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           fullWidth
           variant="outlined"
         />
         <FormControl fullWidth variant="outlined">
-          <InputLabel id="barber-label">Perfil del usuario</InputLabel>
+          <InputLabel id="barber-label">Rol del usuario</InputLabel>
           <Select
             labelId="barber-label"
             id="profile"
-            value={profile}
-            onChange={(e) => setProfile(e.target.value)}
-            label="Perfil del usuario"
+            value={selectedRole}
+            onChange={(e) => setSelectedRole(e.target.value)}
+            label="Rol del usuario"
           >
-            <MenuItem value="Cliente">Cliente</MenuItem>
-            <MenuItem value="Barbero">Barbero</MenuItem>
-            <MenuItem value="Administrador">Administrador</MenuItem>
+            {roles.map((role) => (
+              <MenuItem key={role.id} value={role.id}>
+                {role.name}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
 

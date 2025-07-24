@@ -2,11 +2,28 @@ import { Box, Container, Paper, Button } from '@mui/material';
 import LoginForm from '../components/LoginForm';
 import { useAppSelector } from '../../../shared/hooks/useAppSelector';
 import AddUserForm from '../components/AddUserForm';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSnackbarContext } from '../../../shared/components/snackbar/SnackbarContext';
 
 export default function LoginPage() {
   const { loading, error, token } = useAppSelector((state) => state.auth);
   const [addUserForm, setAddUserForm] = useState(true);
+
+  const { showMessage } = useSnackbarContext();
+
+  useEffect(() => {
+    const tokenExpired = localStorage.getItem("token_expired");
+    if (tokenExpired) {
+      setTimeout(() => {
+        showMessage(
+          "Tu sesión ha expirado. Por favor, vuelve a iniciar sesión.",
+          "warning"
+        );
+        localStorage.removeItem("token_expired");
+      }, 100);
+    }
+  }, [showMessage]);
+
 
   return (
     <Box

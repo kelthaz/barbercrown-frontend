@@ -9,5 +9,6 @@ export interface Appointment {
   };
   barberName: string;
   service: string;
+  userId: number;
   status: "pending" | "confirmed" | "cancelled";
 }

@@ -16,7 +16,19 @@ export const createAppointment = async (
   return response.data;
 };
 
+export const getTime = async (
+  appointmentData: Partial<Appointment>
+): Promise<string[]> => {
+  const { barberName, date } = appointmentData;
+  const response = await api.post(
+    `/appointments/available/${barberName}/${date}`
+  );
+  return response.data;
+};
+
 export const fetchBarbers = async (): Promise<Users[]> => {
-  const response = await api.get(`${import.meta.env.VITE_APP_API_URL}users/barbers`);
+  const response = await api.get(
+    `${import.meta.env.VITE_APP_API_URL}users/barbers`
+  );
   return response.data;
 };

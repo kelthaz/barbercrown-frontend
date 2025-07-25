@@ -11,6 +11,10 @@ export default function AppointmentsDashboard() {
   const [loading, setLoading] = useState(true);
   const [barber, setBarber] = useState<Users[]>([]);
 
+  const handleAddAppoitment = (newAppointment: Appointment) => {
+    setAppointment((prevUsers) => [...prevUsers, newAppointment]);
+  };
+
   const loadAppointments = async () => {
     try {
       setLoading(true);
@@ -46,7 +50,7 @@ export default function AppointmentsDashboard() {
       <Grid container direction="column" alignItems="center" spacing={3}>
 
         <Paper sx={{ p: 3, bgcolor: (theme) => theme.palette.mode === 'dark' ? 'grey.800' : 'white', boxShadow: 1 }}>
-          <AppointmentForm barbers={barber} />
+          <AppointmentForm onAdd={handleAddAppoitment} barbers={barber} />
         </Paper>
 
         <div style={{ width: '100%' }}>

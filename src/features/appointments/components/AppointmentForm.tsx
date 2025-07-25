@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
-import { Appointment } from '../types/appointment';
-import { v4 as uuidv4 } from 'uuid';
 import { TextField, Button, Select, MenuItem, FormControl, InputLabel, Box, Typography, Paper, Grid } from '@mui/material';
 import Alert from '../../../shared/components/alerts/Alert';
 
+interface Barber {
+  id: string;
+  name: string;
+}
 interface Props {
-  onAdd: (appointment: Appointment) => void;
+  barbers: Barber[];
 }
 
-export default function AppointmentForm({ onAdd }: Props) {
+export default function AppointmentForm({ barbers }: Props) {
   const [clientName, setClientName] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
-  const [barber, setBarber] = useState('Juan');
+  const [selectedBarber, setSelectedBarber] = useState<string>('');
   const [successAlert, setSuccessAlert] = useState(false);
   const [errorAlert, setErrorAlert] = useState(false);
 
@@ -22,14 +24,6 @@ export default function AppointmentForm({ onAdd }: Props) {
       setSuccessAlert(false);
       setErrorAlert(true);
     } else {
-      const newAppointment: Appointment = {
-        id: uuidv4(),
-        clientName,
-        date,
-        time,
-        status: 'pending',
-      };
-      onAdd(newAppointment);
       setSuccessAlert(true)
       setErrorAlert(false);
     }
@@ -73,13 +67,15 @@ export default function AppointmentForm({ onAdd }: Props) {
           <Select
             labelId="barber-label"
             id="barber"
-            value={barber}
-            onChange={(e) => setBarber(e.target.value)}
+            value={selectedBarber}
+            onChange={(e) => setSelectedBarber(e.target.value)}
             label="Barbero"
           >
-            <MenuItem value="Juan">Juan</MenuItem>
-            <MenuItem value="María">María</MenuItem>
-            <MenuItem value="Carlos">Carlos</MenuItem>
+            {barbers.map((barber) => (
+              <MenuItem key={barber.id} value={barber.id}>
+                {barber.name}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
 

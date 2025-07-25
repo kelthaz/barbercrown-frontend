@@ -54,8 +54,7 @@ export default function AppointmentTable({ appointments }: Props) {
     }
   }, [isMobile, appointments]);
 
-  const visibleColumnsMobile = ['Cliente', 'Fecha', 'Hora', 'Funciones'];
-  const allColumns = ['CLIENTE', 'FECHA', 'HORA', 'ESTADO', 'ACCIONES'];
+  const allColumns = ['CLIENTE', 'BARBERO', 'FECHA', 'HORA', 'SERVICIO', 'ESTADO', 'ACCIONES'];
 
   return (
     <Paper sx={{ width: '100%', mx: 'auto', mt: 2 }}>
@@ -83,10 +82,14 @@ export default function AppointmentTable({ appointments }: Props) {
               .map((appointment) => (
                 <TableRow key={appointment.id}>
                   <TableCell component="th" scope="row">
-                    {appointment.clientName}
+                    {appointment.user.name}
                   </TableCell>
-                  <TableCell align="left">{appointment.date}</TableCell>
+                  <TableCell component="th" scope="row">
+                    {appointment.barberName}
+                  </TableCell>
+                  <TableCell>{new Date(appointment.date).toISOString().split('T')[0]}</TableCell>
                   <TableCell align="left">{appointment.time}</TableCell>
+                  <TableCell align="left">{appointment.service}</TableCell>
                   <TableCell align="left">
                     <Chip
                       label={appointment.status}

@@ -7,9 +7,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 interface Props {
   appointments: Appointment[];
+  onEdit: (appointment: Appointment) => void;
 }
 
-export default function AppointmentTable({ appointments }: Props) {
+export default function AppointmentTable({ appointments, onEdit }: Props) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const theme = useTheme();
@@ -97,7 +98,7 @@ export default function AppointmentTable({ appointments }: Props) {
                     />
                   </TableCell>
                   <TableCell align="left" sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Button size="small" color="primary" aria-label="editar" sx={{ mr: 0 }}>
+                    <Button size="small" color="primary" aria-label="editar" sx={{ mr: 0 }} onClick={() => onEdit(appointment)}>
                       <EditIcon />
                     </Button>
                     <Button size="small" color="error" aria-label="cancelar">

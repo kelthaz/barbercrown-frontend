@@ -38,7 +38,7 @@ export default function AppointmentForm({ barbers, onAdd }: Props) {
       const barberName = barber ? barber.name : '';
 
       const newAppointment = await createAppointment({
-        userId: userIdData, date, time: selectedHour, service: 'peluqueria', barberName, status: 'pending'
+        client: clientName, userId: userIdData, date, time: selectedHour, service: 'peluqueria', barberName, status: 'pending'
       });
       onAdd(newAppointment)
       setSuccessAlert(false);
@@ -53,8 +53,6 @@ export default function AppointmentForm({ barbers, onAdd }: Props) {
       setErrorAlert(true);
       setSuccessAlert(false);
     }
-
-
   };
 
   useEffect(() => {

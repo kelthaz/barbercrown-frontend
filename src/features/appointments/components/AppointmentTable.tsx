@@ -82,7 +82,7 @@ export default function AppointmentTable({ appointments }: Props) {
               .map((appointment) => (
                 <TableRow key={appointment.id}>
                   <TableCell component="th" scope="row">
-                    {appointment.user.name}
+                    {appointment.client}
                   </TableCell>
                   <TableCell component="th" scope="row">
                     {appointment.barberName}

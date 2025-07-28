@@ -32,3 +32,8 @@ export const fetchBarbers = async (): Promise<Users[]> => {
   );
   return response.data;
 };
+
+export const updateAppointment = async (id: number, data: any) => {
+  const response = await api.put(`/api/appointments/${id}`, data);
+  return response.data;
+};

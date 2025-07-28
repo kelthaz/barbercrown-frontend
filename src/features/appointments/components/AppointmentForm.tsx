@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { TextField, Button, Select, MenuItem, FormControl, InputLabel, Box, Typography, Paper } from '@mui/material';
 import Alert from '../../../shared/components/alerts/Alert';
-import { getTime, createAppointment } from '../services/appointmentService';
+import { getTime, createAppointment, updateAppointment } from '../services/appointmentService';
 import { Appointment } from '../types/appointment';
 interface Barber {
   id: string;
   name: string;
 }
-interface Props {
-  barbers: Barber[];
-}
-
 
 interface Props {
   onAdd: (user: Appointment) => void;
+  appointmentToEdit?: Appointment | null;
+  barbers: Barber[];
+  onUpdate?: (updatedAppointment: Appointment) => void;
 }
 
-export default function AppointmentForm({ barbers, onAdd }: Props) {
+export default function AppointmentForm({ barbers, onAdd, appointmentToEdit, onUpdate }: Props) {
   const [clientName, setClientName] = useState('');
   const [date, setDate] = useState('');
   const [selectedBarber, setSelectedBarber] = useState<string>('');
@@ -29,27 +28,41 @@ export default function AppointmentForm({ barbers, onAdd }: Props) {
     e.preventDefault();
     try {
       const userString = localStorage.getItem('user');
-      let userIdData = null
-      if (userString) {
-        const user = JSON.parse(userString);
-        userIdData = user.id;
-      }
+      const userIdData = userString ? JSON.parse(userString).id : null;
       const barber = barbers.find((b) => b.id === selectedBarber);
       const barberName = barber ? barber.name : '';
+      console.log('date', date)
+      console.log('selectedHour', selectedHour)
 
-      const newAppointment = await createAppointment({
-        client: clientName, userId: userIdData, date, time: selectedHour, service: 'peluqueria', barberName, status: 'pending'
-      });
-      onAdd(newAppointment)
-      setSuccessAlert(false);
-      setErrorAlert(true);
-      setClientName('')
-      setSelectedBarber('')
-      setDate('')
-      setAvailableHours([])
+      const payload = {
+        client: clientName,
+        userId: userIdData,
+        date,
+        time: selectedHour,
+        service: 'peluqueria',
+        barberName
+      };
 
+      let response;
+      if (appointmentToEdit) {
+        response = await updateAppointment(appointmentToEdit.id, payload);
+        onUpdate?.(response);
+      } else {
+        response = await createAppointment(payload);
+        onAdd(response);
+      }
+
+      setSuccessAlert(true);
+      setErrorAlert(false);
+
+      if (!appointmentToEdit) {
+        setClientName('');
+        setSelectedBarber('');
+        setDate('');
+        setAvailableHours([]);
+      }
     } catch (error) {
-      console.error("Error creating user:", error);
+      console.error("Error creating/updating appointment:", error);
       setErrorAlert(true);
       setSuccessAlert(false);
     }
@@ -57,6 +70,7 @@ export default function AppointmentForm({ barbers, onAdd }: Props) {
 
   useEffect(() => {
     const fetchHours = async () => {
+      if (appointmentToEdit) return;
       if (!selectedBarber || !date) return;
       const barber = barbers.find((b) => b.id === selectedBarber);
       const data = await getTime({ barberName: barber?.name, date });
@@ -64,7 +78,20 @@ export default function AppointmentForm({ barbers, onAdd }: Props) {
     };
 
     fetchHours();
-  }, [selectedBarber, date]);
+  }, [selectedBarber, date, appointmentToEdit]);
+
+
+  useEffect(() => {
+    console.log('appointmentToEdit', appointmentToEdit)
+    if (appointmentToEdit) {
+      setClientName(appointmentToEdit.client);
+      setDate(appointmentToEdit.date.split('T')[0]);
+      setSelectedBarber(barbers.find(b => b.name === appointmentToEdit.barberName)?.id || '');
+      setSelectedHour(appointmentToEdit.time);
+      setAvailableHours([appointmentToEdit.time]);
+    }
+  }, [appointmentToEdit, barbers]);
+
 
 
   return (
@@ -123,7 +150,7 @@ export default function AppointmentForm({ barbers, onAdd }: Props) {
 
 
         <Button type="submit" variant="contained" color="primary" >
-          Agendar
+          {appointmentToEdit ? 'Actualizar' : 'Agendar'}
         </Button>
         {successAlert && <Alert message='Cita agendada con éxito' error='' />}
       </Box>

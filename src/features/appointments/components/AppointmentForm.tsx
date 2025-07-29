@@ -13,9 +13,10 @@ interface Props {
   appointmentToEdit?: Appointment | null;
   barbers: Barber[];
   onUpdate?: (updatedAppointment: Appointment) => void;
+  onClearEdit?: () => void;
 }
 
-export default function AppointmentForm({ barbers, onAdd, appointmentToEdit, onUpdate }: Props) {
+export default function AppointmentForm({ barbers, onAdd, appointmentToEdit, onUpdate, onClearEdit }: Props) {
   const [clientName, setClientName] = useState('');
   const [date, setDate] = useState('');
   const [selectedBarber, setSelectedBarber] = useState<string>('');
@@ -40,13 +41,15 @@ export default function AppointmentForm({ barbers, onAdd, appointmentToEdit, onU
         date,
         time: selectedHour,
         service: 'peluqueria',
-        barberName
+        barberName,
+        status: 'pending' as 'pending'
       };
 
       let response;
       if (appointmentToEdit) {
         response = await updateAppointment(appointmentToEdit.id, payload);
         onUpdate?.(response);
+        onClearEdit?.();
       } else {
         response = await createAppointment(payload);
         onAdd(response);
@@ -55,12 +58,11 @@ export default function AppointmentForm({ barbers, onAdd, appointmentToEdit, onU
       setSuccessAlert(true);
       setErrorAlert(false);
 
-      if (!appointmentToEdit) {
-        setClientName('');
-        setSelectedBarber('');
-        setDate('');
-        setAvailableHours([]);
-      }
+      setClientName('');
+      setSelectedBarber('');
+      setDate('');
+      setAvailableHours([]);
+
     } catch (error) {
       console.error("Error creating/updating appointment:", error);
       setErrorAlert(true);
@@ -92,6 +94,25 @@ export default function AppointmentForm({ barbers, onAdd, appointmentToEdit, onU
     }
   }, [appointmentToEdit, barbers]);
 
+  useEffect(() => {
+    const fetchHours = async () => {
+      if (!selectedBarber || !date) return;
+
+      const barber = barbers.find((b) => b.id === selectedBarber);
+      const data = await getTime({ barberName: barber?.name, date });
+      setAvailableHours(data);
+    };
+    const originalDate = appointmentToEdit?.date.split('T')[0];
+    const originalBarberId = barbers.find(b => b.name === appointmentToEdit?.barberName)?.id;
+
+    const shouldFetch =
+      (!appointmentToEdit) ||
+      (appointmentToEdit && (date !== originalDate || selectedBarber !== originalBarberId));
+
+    if (shouldFetch) {
+      fetchHours();
+    }
+  }, [selectedBarber, date, appointmentToEdit, barbers]);
 
 
   return (
@@ -152,7 +173,7 @@ export default function AppointmentForm({ barbers, onAdd, appointmentToEdit, onU
         <Button type="submit" variant="contained" color="primary" >
           {appointmentToEdit ? 'Actualizar' : 'Agendar'}
         </Button>
-        {successAlert && <Alert message='Cita agendada con éxito' error='' />}
+        {successAlert && <Alert message={!appointmentToEdit ? 'Cita actualizada con éxito' : 'Cita agendada con éxito'} error='' />}
       </Box>
     </Paper>
   );

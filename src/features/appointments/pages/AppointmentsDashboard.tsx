@@ -53,7 +53,7 @@ export default function AppointmentsDashboard() {
 
         <Paper sx={{ p: 3, bgcolor: (theme) => theme.palette.mode === 'dark' ? 'grey.800' : 'white', boxShadow: 1 }}>
           <AppointmentForm onAdd={handleAddAppoitment} barbers={barber} appointmentToEdit={appointmentToEdit}
-            onUpdate={loadAppointments} />
+            onUpdate={loadAppointments} onClearEdit={() => setAppointmentToEdit(null)} />
         </Paper>
 
         <div style={{ width: '100%' }}>

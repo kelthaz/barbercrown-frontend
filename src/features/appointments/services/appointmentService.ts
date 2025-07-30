@@ -37,3 +37,7 @@ export const updateAppointment = async (id: number, data: any) => {
   const response = await api.put(`/appointments/${id}`, data);
   return response.data;
 };
+
+export const cancelAppointment = async (id: number): Promise<void> => {
+  await api.delete(`${BASE_URL}/${id}`);
+};

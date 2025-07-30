@@ -1,16 +1,16 @@
 import React, { useState, useRef, useLayoutEffect } from 'react';
 import { Appointment } from '../types/appointment';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip, TablePagination, useMediaQuery, useTheme, Box, Button } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 interface Props {
   appointments: Appointment[];
   onEdit: (appointment: Appointment) => void;
+  onCancel: (appointment: Appointment) => void;
 }
 
-export default function AppointmentTable({ appointments, onEdit }: Props) {
+export default function AppointmentTable({ appointments, onEdit, onCancel }: Props) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const theme = useTheme();
@@ -101,7 +101,7 @@ export default function AppointmentTable({ appointments, onEdit }: Props) {
                     <Button size="small" color="primary" aria-label="editar" sx={{ mr: 0 }} onClick={() => onEdit(appointment)}>
                       <EditIcon />
                     </Button>
-                    <Button size="small" color="error" aria-label="cancelar">
+                    <Button size="small" color="error" aria-label="cancelar" onClick={() => onCancel(appointment)}>
                       <DeleteIcon />
                     </Button>
                   </TableCell>

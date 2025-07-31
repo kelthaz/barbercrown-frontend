@@ -32,8 +32,6 @@ export default function AppointmentForm({ barbers, onAdd, appointmentToEdit, onU
       const userIdData = userString ? JSON.parse(userString).id : null;
       const barber = barbers.find((b) => b.id === selectedBarber);
       const barberName = barber ? barber.name : '';
-      console.log('date', date)
-      console.log('selectedHour', selectedHour)
 
       const payload = {
         client: clientName,
@@ -84,7 +82,6 @@ export default function AppointmentForm({ barbers, onAdd, appointmentToEdit, onU
 
 
   useEffect(() => {
-    console.log('appointmentToEdit', appointmentToEdit)
     if (appointmentToEdit) {
       setClientName(appointmentToEdit.client);
       setDate(appointmentToEdit.date.split('T')[0]);

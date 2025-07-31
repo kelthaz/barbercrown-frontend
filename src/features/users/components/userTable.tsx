@@ -7,9 +7,10 @@ import { fetchUsers } from "../services/userService";
 
 type UsersTableProps = {
   users: Users[];
+    onEdit: (user: Users) => void;
 };
 
-export default function UsersTable({ users }: UsersTableProps) {
+export default function UsersTable({ users, onEdit }: UsersTableProps) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const theme = useTheme();
@@ -95,7 +96,7 @@ export default function UsersTable({ users }: UsersTableProps) {
                     />
                   </TableCell>
                   <TableCell align="left" sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Button size="small" color="primary" aria-label="editar" sx={{ mr: 0 }}>
+                    <Button size="small" color="primary" aria-label="editar" sx={{ mr: 0 }} onClick={() => onEdit(user)}>
                       <EditIcon />
                     </Button>
                     <Button size="small" color="error" aria-label="cancelar">

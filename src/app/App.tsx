@@ -24,8 +24,8 @@ export default function App() {
         >
           <Route index element={<DashboardPage />} />
           <Route path="appointments" element={<AppointmentsDashboard />} />
-          <Route path="users" element={<UserDashboard />} />
-          <Route path="roles" element={<RoleDashboard />} />
+          <Route path="users" element={<PrivateRoute allowedRoles={['Administrador']}><UserDashboard />  </PrivateRoute>} />
+          <Route path="roles" element={<PrivateRoute allowedRoles={['Administrador']}><RoleDashboard /></PrivateRoute>} />
         </Route>
       </Routes>
     </ColorModeProvider>

@@ -20,6 +20,7 @@ import { logout } from '../../../features/auth/slices/authSlice';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
+import { useAppSelector } from '../../hooks/useAppSelector';
 
 export default function DashboardShell() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -32,6 +33,8 @@ export default function DashboardShell() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [adminMenuOpen, setAdminMenuOpen] = useState(false);
+  const user = useAppSelector((state) => state.auth.user);
+  const role = user?.role;
 
   const handleAdminToggle = () => {
     setAdminMenuOpen(!adminMenuOpen);
@@ -66,7 +69,7 @@ export default function DashboardShell() {
   const drawer = (
     <Box sx={{ textAlign: 'center' }}>
       <Typography variant="h6" sx={{ my: 2 }}>
-        BarberCrown
+        Barberia DPJ
       </Typography>
       <List>
         {[
@@ -88,14 +91,14 @@ export default function DashboardShell() {
           </ListItem>
         ))}
 
-        <ListItem disablePadding>
-          <ListItemButton onClick={handleAdminToggle}>
-            <ListItemIcon><AdminPanelSettingsIcon /></ListItemIcon>
-            <ListItemText primary="Administrador" />
-          </ListItemButton>
-        </ListItem>
-        {adminMenuOpen && (
+        {adminMenuOpen && role === 'Administrador' && (
           <>
+            <ListItem disablePadding>
+              <ListItemButton onClick={handleAdminToggle}>
+                <ListItemIcon><AdminPanelSettingsIcon /></ListItemIcon>
+                <ListItemText primary="Administrador" />
+              </ListItemButton>
+            </ListItem>
             <ListItem disablePadding sx={{ pl: 4 }}>
               <ListItemButton onClick={handleDrawerToggle} component={Link} to="/dashboard/users">
                 <ListItemIcon><SupervisorAccountIcon /></ListItemIcon>
@@ -136,7 +139,7 @@ export default function DashboardShell() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1, textAlign: { xs: 'center', sm: 'left' } }}>
-            BarberCrown
+            Barberia DPJ
           </Typography>
           <Box sx={{ display: { xs: 'none', sm: 'flex' }, gap: 2, alignItems: 'center' }}>
             <Button color="inherit" component={Link} to="/dashboard">
@@ -145,29 +148,31 @@ export default function DashboardShell() {
             <Button color="inherit" component={Link} to="/dashboard/appointments">
               Citas
             </Button>
-            <div>
-              <Button color="inherit" onClick={handleMenuAdmin}>
-                Administrador
-              </Button>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorElAdmin}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorElAdmin)}
-                onClose={handleCloseAdmin}
-              >
-                <MenuItem component={Link} to="/dashboard/users"><SupervisorAccountIcon />  Usuarios</MenuItem>
-                <MenuItem component={Link} to="/dashboard/roles"><AdminPanelSettingsIcon />  Roles</MenuItem>
-              </Menu>
-            </div>
+            {role === 'Administrador' && (
+              <>
+                <Button color="inherit" onClick={handleMenuAdmin}>
+                  Administrador
+                </Button>
+                <Menu
+                  id="menu-appbar"
+                  anchorEl={anchorElAdmin}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={Boolean(anchorElAdmin)}
+                  onClose={handleCloseAdmin}
+                >
+                  <MenuItem component={Link} to="/dashboard/users"><SupervisorAccountIcon />  Usuarios</MenuItem>
+                  <MenuItem component={Link} to="/dashboard/roles"><AdminPanelSettingsIcon />  Roles</MenuItem>
+                </Menu>
+              </>
+            )}
             <IconButton onClick={toggleColorMode} color="inherit">
               {icon}
             </IconButton>

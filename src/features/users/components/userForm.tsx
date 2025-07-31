@@ -5,13 +5,16 @@ import { TextField, Button, Select, MenuItem, FormControl, InputLabel, Box, Typo
 import Alert from '../../../shared/components/alerts/Alert';
 import { fetchRoles } from '../../roles/services/roleService';
 import { Roles } from '../../roles/types/roles';
-import { createUser } from '../services/userService';
+import { createUser, udpateUser } from '../services/userService';
 
 interface Props {
   onAdd: (user: Users) => void;
+  onUpdate?: (updatedUser: Users) => void;
+  onClearEdit?: () => void;
+  userToEdit?: Users | null;
 }
 
-export default function userForm({ onAdd }: Props) {
+export default function userForm({ onAdd, onUpdate, userToEdit, onClearEdit }: Props) {
   const [name, setName] = useState('');
   const [nameError, setNameError] = useState('');
   const [roles, setRoles] = useState<Roles[]>([]);
@@ -55,10 +58,28 @@ export default function userForm({ onAdd }: Props) {
     }
     if (valid) {
       try {
-        const newUser = await createUser({
-          name, email, rol_id: selectedRole, password, estado: 1, phone
-        });
-        onAdd(newUser);
+
+        const payload = {
+          name: name,
+          email: email,
+          password: password,
+          phone: phone,
+          estado: 1
+
+        };
+
+        let response;
+        if (userToEdit) {
+          response = await udpateUser(parseInt(userToEdit.id), payload);
+          onUpdate?.(response);
+          onClearEdit?.();
+        } else {
+          const newUser = await createUser({
+            name, email, rol_id: selectedRole, password, estado: 1, phone
+          });
+
+          onAdd(newUser);
+        }
         setSuccessAlert(true);
         setErrorAlert(false);
         setName('');
@@ -87,6 +108,15 @@ export default function userForm({ onAdd }: Props) {
 
     loadRoles();
   }, []);
+
+  useEffect(() => {
+    if (userToEdit) {
+      setName(userToEdit.name);
+      setEmail(userToEdit.email);
+      setPassword(userToEdit.password);
+      setPhone(userToEdit.phone);
+    }
+  }, [userToEdit]);
 
   return (
     <Paper sx={{ p: 4, maxWidth: 600, mx: 'auto' }}>
@@ -160,7 +190,7 @@ export default function userForm({ onAdd }: Props) {
         )}
 
         <Button type="submit" variant="contained" color="primary" >
-          Crear usuario
+          {userToEdit ? 'Actualizar' : 'Crear Usuario'}
         </Button>
         {successAlert && <Alert message='Usuario creado con éxito.' error='' />}
         {errorAlert && <Alert message='' error='Faltan campos por completar.' />}

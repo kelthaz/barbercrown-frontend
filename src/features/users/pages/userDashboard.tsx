@@ -8,10 +8,11 @@ import { fetchUsers } from '../services/userService';
 export default function userDashboard() {
   const [users, setUsers] = useState<Users[]>([]);
   const [loading, setLoading] = useState(true);
-    const [userToEdit, setUserToEdit] = useState<Users | null>(null);
+  const [userToEdit, setUserToEdit] = useState<Users | null>(null);
 
-  const handleAddUser = (newUser: Users) => {
-    setUsers((prevUsers) => [...prevUsers, newUser]);
+  const handleAddUser = async (newUser: Users) => {
+    await loadUsers();
+    setUserToEdit(null);
   };
 
   const loadUsers = async () => {
@@ -30,6 +31,11 @@ export default function userDashboard() {
     loadUsers();
   }, []);
 
+  const handleClearEdit = () => {
+    setUserToEdit(null);
+  };
+
+
   return (
     <Box sx={{ p: { xs: 0, sm: 3 }, width: '100%' }}>
       <Typography variant="h4" component="h1" gutterBottom align="center">
@@ -39,12 +45,12 @@ export default function userDashboard() {
       <Grid container direction="column" alignItems="center" spacing={3}>
 
         <Paper sx={{ p: 3, bgcolor: (theme) => theme.palette.mode === 'dark' ? 'grey.800' : 'white', boxShadow: 1 }}>
-          <UsersForm onAdd={handleAddUser} userToEdit={userToEdit}/>
+          <UsersForm onAdd={handleAddUser} userToEdit={userToEdit} onClearEdit={handleClearEdit} />
         </Paper>
 
         <div style={{ width: '100%' }}>
           <div style={{ width: '100%' }}>
-            <UsersTable users={users}  onEdit={(appt) => setUserToEdit(appt)} />
+            <UsersTable users={users} onEdit={(appt) => setUserToEdit(appt)} />
           </div>
         </div>
       </Grid>

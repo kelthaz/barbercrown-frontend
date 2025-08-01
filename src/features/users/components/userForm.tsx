@@ -28,6 +28,8 @@ export default function userForm({ onAdd, onUpdate, userToEdit, onClearEdit }: P
   const [loading, setLoading] = useState(true);
   const [phoneError, setPhoneError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [lastAction, setLastAction] = useState('');
 
   const validateForm = () => {
     const errors: { [key: string]: string } = {};
@@ -59,27 +61,34 @@ export default function userForm({ onAdd, onUpdate, userToEdit, onClearEdit }: P
     if (valid) {
       try {
 
+        const selectedRoleObject = roles.find((r) => Number(r.id) === selectedRole);
         const payload = {
           name: name,
           email: email,
           password: password,
           phone: phone,
-          estado: 1
+          rol_id: selectedRole,
+          estado: 1,
+          rol: selectedRoleObject,
 
         };
 
         let response;
         if (userToEdit) {
-          response = await udpateUser(parseInt(userToEdit.id), payload);
-          onUpdate?.(response);
-          onClearEdit?.();
+          const updatedUser = await udpateUser(parseInt(userToEdit.id), {
+            ...payload,
+          });
+          onAdd(updatedUser);
+          setLastAction('update')
         } else {
           const newUser = await createUser({
             name, email, rol_id: selectedRole, password, estado: 1, phone
           });
 
           onAdd(newUser);
+          setLastAction('create');
         }
+        onClearEdit?.();
         setSuccessAlert(true);
         setErrorAlert(false);
         setName('');
@@ -115,6 +124,13 @@ export default function userForm({ onAdd, onUpdate, userToEdit, onClearEdit }: P
       setEmail(userToEdit.email);
       setPassword(userToEdit.password);
       setPhone(userToEdit.phone);
+      setIsEditing(true);
+    } else {
+      setName('');
+      setEmail('');
+      setPassword('');
+      setPhone('');
+      setIsEditing(false);
     }
   }, [userToEdit]);
 
@@ -192,7 +208,8 @@ export default function userForm({ onAdd, onUpdate, userToEdit, onClearEdit }: P
         <Button type="submit" variant="contained" color="primary" >
           {userToEdit ? 'Actualizar' : 'Crear Usuario'}
         </Button>
-        {successAlert && <Alert message='Usuario creado con éxito.' error='' />}
+        {successAlert && <Alert message={
+          lastAction === 'update' ? 'Usuario actualizado con exito' : 'Usuario creado con exito'} error='' />}
         {errorAlert && <Alert message='' error='Faltan campos por completar.' />}
       </Box>
     </Paper>

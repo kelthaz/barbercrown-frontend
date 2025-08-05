@@ -5,13 +5,17 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { fetchRoles } from "../services/roleService";
 
-export default function RolesTable() {
+type RolesTableProps = {
+  roles: Roles[];
+};
+
+
+export default function RolesTable({ roles }: RolesTableProps) {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const headerCellsRef = useRef<(HTMLTableCellElement | null)[]>([]);
-    const [roles, setRoles] = useState<Roles[]>([]);
     const [loading, setLoading] = useState(true);
 
     const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
@@ -51,7 +55,6 @@ export default function RolesTable() {
         const loadRoles = async () => {
             try {
                 const data = await fetchRoles();
-                setRoles(data);
             } catch (error) {
                 console.error("Error fetching roles:", error);
             } finally {

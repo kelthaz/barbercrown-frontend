@@ -12,3 +12,7 @@ export const createRole = async (roleData: Partial<Roles>): Promise<Roles> => {
   const response = await api.post(BASE_URL, roleData);
   return response.data;
 };
+
+export const cancelRol = async (id: number): Promise<void> => {
+  await api.delete(`${BASE_URL}/${id}`);
+};

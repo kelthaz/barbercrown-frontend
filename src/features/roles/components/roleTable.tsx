@@ -6,11 +6,12 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { fetchRoles } from "../services/roleService";
 
 type RolesTableProps = {
-  roles: Roles[];
+    roles: Roles[];
+    onCancel: (appointment: Roles) => void;
 };
 
 
-export default function RolesTable({ roles }: RolesTableProps) {
+export default function RolesTable({ roles, onCancel }: RolesTableProps) {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const theme = useTheme();
@@ -100,7 +101,7 @@ export default function RolesTable({ roles }: RolesTableProps) {
                                         <Button size="small" color="primary" aria-label="editar" sx={{ mr: 0 }}>
                                             <EditIcon />
                                         </Button>
-                                        <Button size="small" color="error" aria-label="cancelar">
+                                        <Button size="small" color="error" aria-label="cancelar" onClick={() => onCancel(role)}>
                                             <DeleteIcon />
                                         </Button>
                                     </TableCell>

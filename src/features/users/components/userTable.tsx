@@ -7,7 +7,7 @@ import { fetchUsers } from "../services/userService";
 
 type UsersTableProps = {
   users: Users[];
-    onEdit: (user: Users) => void;
+  onEdit: (user: Users) => void;
 };
 
 export default function UsersTable({ users, onEdit }: UsersTableProps) {

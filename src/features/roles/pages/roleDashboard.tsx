@@ -42,7 +42,7 @@ export default function RoleDashboard() {
         if (!rolToCancel) return;
         try {
             await cancelRol(Number(rolToCancel.id));
-            setSnackbarMessage('Cita cancelada exitosamente');
+            setSnackbarMessage('Rol eliminado exitosamente!');
             loadRoles();
         } catch (error) {
             setSnackbarMessage('Error al cancelar la cita');
